@@ -4,7 +4,7 @@ from algorithms.kmp import kmp
 from algorithms.boyer_moore import boyer_moore
 from algorithms.aho_corasick import aho_corasick
 from algorithms.levenshtein import levenshtein_fuzzy_match
-from utils.pdf_extractor import extract_text_from_pdf, extract_words_from_pdf
+from utils.pdf_extractor import extract_cv_information, extract_words_from_pdf
 import time
 import pprint
 import concurrent.futures
@@ -52,7 +52,7 @@ def process_cv_fuzzy(args):
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='localhost', user='root', password='owen', database='stima'
+            host='localhost', user='root', password='', database='stima3'
         )
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 
@@ -114,7 +114,7 @@ def find_top_n_cv(n : int, algorithm : str, keyword : str):
             
             for result_data in top_n_final:
                 if result_data['cv_path']:
-                    result_data['summary'] = extract_text_from_pdf(result_data['cv_path'])
+                    result_data['summary'] = extract_cv_information(result_data['cv_path'])
 
             return {
                 'top_n': top_n_final,
