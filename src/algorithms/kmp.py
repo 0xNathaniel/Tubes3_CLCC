@@ -1,6 +1,8 @@
+from typing import List
+
 # Main KMP function to be called
 
-def kmp(text, keywords):    
+def kmp(text: str, keywords: List[str]) -> List[int]:    
     results = []
     for keyword in keywords:
         keyword_lower = keyword.lower()
@@ -11,7 +13,7 @@ def kmp(text, keywords):
 
 # KMP Algorithm
 
-def kmp_search(text, pattern):
+def kmp_search(text: str, pattern: str) -> int:
     n, m = len(text), len(pattern)
     if m == 0:
         return 0
@@ -38,7 +40,7 @@ def kmp_search(text, pattern):
 
 # KMP Border function
 
-def compute_border(pattern):
+def compute_border(pattern: str) -> List[int]:
     m = len(pattern)
     lps = [0] * m
     length = 0

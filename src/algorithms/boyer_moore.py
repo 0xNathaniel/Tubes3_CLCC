@@ -1,6 +1,8 @@
+from typing import List
+
 # Main Boyer-Moore function to be called
 
-def boyer_moore(text, keywords):
+def boyer_moore(text: str, keywords: List[str]) -> List[int]:
     results = []
     for keyword in keywords:
         keyword_lower = keyword.lower()
@@ -11,7 +13,7 @@ def boyer_moore(text, keywords):
 
 # Boyer-Moore Algorithm
 
-def bm_search_all_occurrences(text, pattern):
+def bm_search_all_occurrences(text: str, pattern: str) -> int:
     if not pattern:
         return 0
         
@@ -29,7 +31,7 @@ def bm_search_all_occurrences(text, pattern):
     
     return count
 
-def bm_match_single(text, pattern):
+def bm_match_single(text: str, pattern: str) -> int:
     last = build_last_occurrence_table(pattern)
     n, m = len(text), len(pattern)
     
@@ -55,7 +57,7 @@ def bm_match_single(text, pattern):
     
     return -1
 
-def build_last_occurrence_table(pattern):
+def build_last_occurrence_table(pattern: str) -> List[int]:
     last = [-1] * 128
     
     for i in range(len(pattern)):

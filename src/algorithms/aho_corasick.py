@@ -1,8 +1,9 @@
 from collections import deque
+from typing import List, Dict, Optional
 
 # Main Aho-Corasick function to be called
 
-def aho_corasick(text, keywords):
+def aho_corasick(text: str, keywords: List[str]) -> List[int]:
     patterns = [keyword.lower() for keyword in keywords]
     
     root = build_trie(patterns)
@@ -19,12 +20,12 @@ def aho_corasick(text, keywords):
 # TrieNode data structure for Aho-Corasick algorithm
 
 class TrieNode:
-    def __init__(self):
-        self.children = {}
-        self.failure = None
-        self.output = []
+    def __init__(self) -> None:
+        self.children: Dict[str, 'TrieNode'] = {}
+        self.failure: Optional['TrieNode'] = None
+        self.output: List[int] = []
 
-def build_trie(patterns):
+def build_trie(patterns: List[str]) -> TrieNode:
     root = TrieNode()
     
     for i, pattern in enumerate(patterns):
@@ -39,7 +40,7 @@ def build_trie(patterns):
 
 # Aho-Corasick helper functions
 
-def build_failure_links(root):
+def build_failure_links(root: TrieNode) -> None:
     queue = deque()
     
     for child in root.children.values():
@@ -63,7 +64,7 @@ def build_failure_links(root):
             
             child.output.extend(child.failure.output)
 
-def search(text, root):
+def search(text: str, root: TrieNode) -> List[int]:
     matches = []
     node = root
     
