@@ -152,5 +152,5 @@ def fuzzy_match(text: str, keywords: List[str], strategy: str = 'hybrid',
         return levenshtein_fuzzy_match(text, keywords, max_distance)
     elif strategy == 'similarity':
         return levenshtein_similarity_score(text, keywords, similarity_threshold)
-    else:  # hybrid - default
+    else:  
         return levenshtein_fuzzy_match(text, keywords, max_distance)
