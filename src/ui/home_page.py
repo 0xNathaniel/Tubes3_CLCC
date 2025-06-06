@@ -19,10 +19,12 @@ class HomePage:
         # Algorithm selection
         algorithm_text = ft.Text("Select Algorithm:")
         self.algorithm_toggle = ft.SegmentedButton(
+            width=400,
             selected={self.search_algorithm},
             segments=[
                 ft.Segment(value="KMP", label=ft.Text("KMP")),
                 ft.Segment(value="BM", label=ft.Text("Boyer-Moore")),
+                ft.Segment(value="AC", label=ft.Text("Aho-Corasick")),
             ],
             on_change=self.algorithm_changed
         )
