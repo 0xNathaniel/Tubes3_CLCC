@@ -1,6 +1,6 @@
 import os
 import re
-import PyPDF2
+import pypdf
 from typing import  Optional
 
 
@@ -10,7 +10,7 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         return ""
     try:
         with open(pdf_path, 'rb') as file:
-            pdf_reader = PyPDF2.PdfReader(file)
+            pdf_reader = pypdf.PdfReader(file)
             text = ""
             
             # Extract text from each page
