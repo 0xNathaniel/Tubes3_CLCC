@@ -7,112 +7,125 @@ from algorithms.levenshtein import levenshtein_fuzzy_match
 from utils.pdf_extractor import extract_text_from_pdf, extract_words_from_pdf
 import time
 import pprint
+import concurrent.futures
+
 def extract_keywords(keywords: str):
     if not keywords:
         return []
-    
     keyword_list = [keyword.strip().lower() for keyword in keywords.split(',')]
     unique_keywords = list(set(keyword_list))
-    
     return unique_keywords
+
+def process_cv_exact(args):
+    data_lamaran, keyword_list, algorithm = args
+    detail_id = data_lamaran['detail_id']
+    if data_lamaran['cv_path'] is None:
+        return detail_id, []
+
+    cv_words = extract_words_from_pdf(data_lamaran['cv_path'])
+    if not cv_words:
+        return detail_id, []
+
+    results = []
+    if algorithm == "kmp":
+        results = kmp(cv_words, keyword_list)
+    elif algorithm == "boyer_moore":
+        results = boyer_moore(cv_words, keyword_list)
+    elif algorithm == "aho_corasick":
+        results = aho_corasick(cv_words, keyword_list)
+    
+    return detail_id, results
+
+def process_cv_fuzzy(args):
+    data_lamaran, keywords_to_fuzzy = args
+    detail_id = data_lamaran['detail_id']
+    if data_lamaran['cv_path'] is None:
+        return detail_id, []
+        
+    cv_words = extract_words_from_pdf(data_lamaran['cv_path'])
+    if not cv_words:
+        return detail_id, []
+
+    results = levenshtein_fuzzy_match(cv_words, keywords_to_fuzzy)
+    return detail_id, results
 
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='owen', 
-            database='stima'
+            host='localhost', user='root', password='owen', database='stima'
         )
-    
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 
             query = "SELECT * FROM ApplicantProfile ap INNER JOIN ApplicationDetail ad ON ap.applicant_id = ad.applicant_id"
             cursor.execute(query)
-            combined_data = cursor.fetchall()
+            all_cv_data = cursor.fetchall()
             
-            top_n = {}
+            keyword_list = extract_keywords(keyword)
+            if not keyword_list:
+                return {'top_n': [], 'exact_execution_time': 0, 'fuzzy_execution_time': 0, 'total_cv': 0}
+
             exact_execution_times = 0
             fuzzy_execution_times = 0
-            keyword_list = extract_keywords(keyword)
             
+            processed_results = {
+                data['detail_id']: {
+                    'first_name': data['first_name'], 'last_name': data['last_name'],
+                    'application_role': data['application_role'], 'cv_path': data['cv_path'],
+                    'result': [0] * len(keyword_list), 'total': 0, 'summary': ""
+                } for data in all_cv_data
+            }
+
             global_keywords_found = [False] * len(keyword_list)
             
-
-            for data_lamaran in combined_data:
-                results = []
-                if(algorithm == "kmp" and data_lamaran['cv_path'] is not None):
-                    start_time = time.perf_counter()
-                    results = kmp(extract_words_from_pdf(data_lamaran['cv_path']), keyword_list)
-                    end_time = time.perf_counter() 
-                    exact_execution_times += end_time - start_time
-                elif(algorithm == "boyer_moore" and data_lamaran['cv_path'] is not None) :
-                    start_time = time.perf_counter()
-                    results = boyer_moore(extract_words_from_pdf(data_lamaran['cv_path']), keyword_list)
-                    end_time = time.perf_counter()
-                    exact_execution_times += end_time - start_time
-                elif(algorithm == "aho_corasick" and data_lamaran['cv_path'] is not None) :
-                    start_time = time.perf_counter()
-                    results = aho_corasick(extract_words_from_pdf(data_lamaran['cv_path']), keyword_list)
-                    end_time = time.perf_counter()
-                    exact_execution_times += end_time - start_time
+            start_exact_time = time.perf_counter()
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                exact_match_args = [(data, keyword_list, algorithm) for data in all_cv_data]
+                results_iterator = executor.map(process_cv_exact, exact_match_args)
                 
-                
-                for i, count in enumerate(results):
-                    if count > 0:
-                        global_keywords_found[i] = True
-                
-                
-                total = sum(results)
-                detail_id = data_lamaran['detail_id']
-
-                if results :
-                    top_n[detail_id] = {
-                        'first_name': data_lamaran['first_name'], 
-                        'last_name': data_lamaran['last_name'],
-                        'application_role': data_lamaran['application_role'], 
-                        'cv_path': data_lamaran['cv_path'],
-                        'result': results, 
-                        'total': total, 
-                        'summary': ""
-                    }
+                for detail_id, exact_results in results_iterator:
+                    if exact_results:
+                        for i, count in enumerate(exact_results):
+                            if count > 0:
+                                global_keywords_found[i] = True
+                                processed_results[detail_id]['result'][i] += count
+                                processed_results[detail_id]['total'] += count
+            exact_execution_times = time.perf_counter() - start_exact_time
 
             fuzzy_map = {i: keyword_list[i] for i, found in enumerate(global_keywords_found) if not found}
             
+            start_fuzzy_time = time.perf_counter()
             if fuzzy_map:
                 keywords_to_fuzzy = list(fuzzy_map.values())
-                
-                for data_lamaran in combined_data:
-                    detail_id = data_lamaran['detail_id']
-                    
-                    if detail_id in top_n and data_lamaran['cv_path'] is not None:
-                        start_time = time.perf_counter()
-                        fuzzy_results = levenshtein_fuzzy_match(data_lamaran['cv_path'], keywords_to_fuzzy)
-                        end_time = time.perf_counter()
-                        fuzzy_execution_times += end_time - start_time
+                with concurrent.futures.ProcessPoolExecutor() as executor:
+                    fuzzy_match_args = [(data, keywords_to_fuzzy) for data in all_cv_data]
+                    results_iterator = executor.map(process_cv_fuzzy, fuzzy_match_args)
 
+                    for detail_id, fuzzy_results in results_iterator:
                         if sum(fuzzy_results) > 0:
                             for original_index, fuzzy_count in zip(fuzzy_map.keys(), fuzzy_results):
                                 if fuzzy_count > 0:
-                                    top_n[detail_id]['result'][original_index] += fuzzy_count
-                                    top_n[detail_id]['total'] += fuzzy_count
+                                    processed_results[detail_id]['result'][original_index] += fuzzy_count
+                                    processed_results[detail_id]['total'] += fuzzy_count
+            fuzzy_execution_times = time.perf_counter() - start_fuzzy_time
 
-            top_n_sorted_list = sorted(top_n.items(), key=lambda item: item[1]['total'], reverse=True)[:n]
+            final_results = [data for data in processed_results.values() if data['total'] > 0]
+            sorted_results = sorted(final_results, key=lambda item: item['total'], reverse=True)
+            top_n_final = sorted_results[:n]
             
-            top_n_sorted = {}
-            for detail_id, cv_data in top_n_sorted_list:
-                cv_data['summary'] = extract_text_from_pdf(cv_data['cv_path'])
-                top_n_sorted[detail_id] = cv_data
-            
+            for result_data in top_n_final:
+                if result_data['cv_path']:
+                    result_data['summary'] = extract_text_from_pdf(result_data['cv_path'])
+
             return {
-                'top_n': top_n_sorted, # dictionary { detail_id: {first_name, last_name, application_role, cv_path, result, total, summary} }
+                'top_n': top_n_final,
                 'exact_execution_time': exact_execution_times,
                 'fuzzy_execution_time': fuzzy_execution_times,
-                'total_cv' : len(combined_data),
+                'total_cv': len(all_cv_data)
             }
 
     except Error as e:
         print(f"Error saat menghubungkan ke MySQL: {e}")
+        return {'top_n': [], 'exact_execution_time': 0, 'fuzzy_execution_time': 0, 'total_cv': 0}
 
     finally:
         if 'koneksi' in locals() and koneksi.is_connected():
@@ -133,7 +146,7 @@ if __name__ == "__main__":
         
         print("\n--- RINGKASAN PENCARIAN ---")
         print(f"Total CV dipindai: {search_result['total_cv']}")
-        print(f"Waktu eksekusi Exact Match: {search_result['exact_execution_time']:.4f} detik")
-        print(f"Waktu eksekusi Fuzzy Match: {search_result['fuzzy_execution_time']:.4f} detik")
+        print(f"Waktu eksekusi Exact Match (paralel): {search_result['exact_execution_time']:.4f} detik")
+        print(f"Waktu eksekusi Fuzzy Match (paralel): {search_result['fuzzy_execution_time']:.4f} detik")
     else:
         print("Tidak ada CV yang cocok dengan kriteria pencarian.")
