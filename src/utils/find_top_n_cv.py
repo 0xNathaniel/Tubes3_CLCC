@@ -114,7 +114,18 @@ def find_top_n_cv(n : int, algorithm : str, keyword : str):
             
             for result_data in top_n_final:
                 if result_data['cv_path']:
-                    result_data['summary'] = extract_cv_information(result_data['cv_path'])
+                    try:
+                        from utils.pdf_extractor import extract_text_from_pdf
+                        pdf_text = extract_text_from_pdf(result_data['cv_path'])
+                        if pdf_text:
+                            result_data['summary'] = extract_cv_information(pdf_text)
+                        else:
+                            result_data['summary'] = "Could not extract text from PDF file."
+                    except Exception as e:
+                        print(f"Error extracting CV info for {result_data['cv_path']}: {e}")
+                        result_data['summary'] = f"Error extracting CV information: {str(e)}"
+                else:
+                    result_data['summary'] = "No CV file available."
 
             return {
                 'top_n': top_n_final,
