@@ -15,6 +15,18 @@
 
 ## Table of Contents
 
+- [Program Description](#program-description)
+  - [Fitur Utama](#fitur-utama)
+  - [Implementasi Algoritma](#implementasi-algoritma)
+  - [Input](#input)
+  - [Output](#output)
+  - [Struktur Folder](#struktur-folder)
+- [Getting Started: Requirement dan Instalasi](#getting-started-requirement-dan-instalasi)
+  - [1. Wajib Menggunakan Python 3.10+ dan MariaDB](#1-wajib-menggunakan-python-310-dan-mariadb)
+  - [2. Instalasi Dependency](#2-instalasi-dependency)
+  - [3. Menjalankan Program](#3-menjalankan-program)
+- [Authors](#authors)
+
 ---
 
 ## Program Description
