@@ -1,0 +1,4 @@
+flet>=0.7
+mysql-connector-python>=8.0
+pypdf>=3.9
+faker>=19.0
