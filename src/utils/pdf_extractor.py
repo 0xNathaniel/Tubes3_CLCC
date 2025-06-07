@@ -149,9 +149,9 @@ def extract_cv_information(text: str) -> str:
             'Years': ', '.join(years) if years else None
         }
     
-    result = "=" * 70 + "\n"
+    result = "=" * 52 + "\n"
     result += "                        EXTRACTED CV INFORMATION\n"
-    result += "=" * 70 + "\n\n"
+    result += "=" * 52 + "\n\n"
     
     if 'Job_Title' in extracted_info:
         result += "JOB TITLE:\n"
