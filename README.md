@@ -45,7 +45,7 @@ Aplikasi ini juga mengimplementasikan **enkripsi RSA** pada data profil pelamar 
 - **Enkripsi data profil applicant** menggunakan RSA (tanpa library cryptography/Hashlib)
 - **Ekstraksi data dari file PDF** (CV)
 - **Pencarian paralel** untuk efisiensi
-- **GUI Web** (Flask) untuk input keyword, memilih algoritma, dan menampilkan hasil ranking CV
+- **GUI** (Flet) untuk input keyword, memilih algoritma, dan menampilkan hasil ranking CV
 - **Database MySQL** untuk penyimpanan data pelamar dan aplikasi
 
 ---
@@ -90,7 +90,7 @@ Aplikasi ini juga mengimplementasikan **enkripsi RSA** pada data profil pelamar 
 
 ### Struktur Folder
 
-- **src/**: Seluruh source code Python (algoritma, utilitas, backend Flask, dsb)
+- **src/**: Seluruh source code Python (algoritma, utilitas, dsb)
 - **src/algorithms/**: Implementasi KMP, Boyer-Moore, Regex, Aho-Corasick, Levenshtein
 - **src/utils/**: Utility (RSA, PDF extractor, database, dsb)
 - **src/faker/**: Seeder dan generator data dummy terenkripsi
