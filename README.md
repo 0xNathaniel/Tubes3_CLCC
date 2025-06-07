@@ -160,8 +160,8 @@ Pastikan sistem Anda telah ter-install:
 
 ## Authors
 
-| Nama                     | NIM       |
-| ------------------------ | --------- |
-| Nathaniel Jonathan Rusli | 13523013  |
-| Kenneth Poenadi          | 13523040  |
-| Steven Owen              | 135230103 |
+| Nama                     | NIM      |
+| ------------------------ | -------- |
+| Nathaniel Jonathan Rusli | 13523013 |
+| Kenneth Poenadi          | 13523040 |
+| Steven Owen              | 13523103 |
