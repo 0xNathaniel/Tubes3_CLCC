@@ -30,7 +30,7 @@ ACTUAL_CV_PATH = BASE_CV_PATH  # Gunakan path absolut ke folder cv
 rsa_instance = get_rsa_instance()
 
 ROLES = []
-for item in os.listdir(ACd TUAL_CV_PATH):
+for item in os.listdir(ACTUAL_CV_PATH):
     if os.path.isdir(os.path.join(ACTUAL_CV_PATH, item)):
         ROLES.append(item)
 
