@@ -5,13 +5,13 @@ from algorithms.boyer_moore import boyer_moore
 from algorithms.aho_corasick import aho_corasick
 from algorithms.levenshtein import levenshtein_fuzzy_match
 from utils.pdf_extractor import extract_cv_information, extract_words_from_pdf
-from utils.rsa import RSA, decrypt_data
+from utils.rsa import get_rsa_instance, decrypt_data
 import time
 import pprint
 import concurrent.futures
 
-# Inisialisasi RSA dengan p dan q yang sama dengan proses enkripsi
-rsa_instance = RSA(61, 53)
+# Inisialisasi RSA konsisten dengan seeder
+rsa_instance = get_rsa_instance()
 
 def parse_encrypted_field(val):
     """Ubah string '123,456,789' menjadi list[int] [123,456,789]"""
@@ -73,7 +73,7 @@ def process_cv_fuzzy(args):
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='localhost', user='root', password='', database='stima3'
+            host='0.tcp.ap.ngrok.io', user='remote_user', password='owen', database='stima_encrypted', port=16096
         )
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 

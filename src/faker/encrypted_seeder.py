@@ -9,7 +9,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 
-from utils.rsa import RSA, encrypt_data
+from utils.rsa import get_rsa_instance, encrypt_data
 
 fake = Faker()
 Faker.seed(42)
@@ -27,10 +27,10 @@ BASE_CV_PATH = os.path.join(PROJECT_ROOT, "data", "cv")
 ACTUAL_CV_PATH = BASE_CV_PATH  # Gunakan path absolut ke folder cv
 
 # Inisialisasi RSA (gunakan p dan q yang sama dengan dekripsi)
-rsa_instance = RSA(61, 53)
+rsa_instance = get_rsa_instance()
 
 ROLES = []
-for item in os.listdir(ACTUAL_CV_PATH):
+for item in os.listdir(ACd TUAL_CV_PATH):
     if os.path.isdir(os.path.join(ACTUAL_CV_PATH, item)):
         ROLES.append(item)
 

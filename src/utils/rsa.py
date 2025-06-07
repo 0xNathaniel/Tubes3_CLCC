@@ -2,7 +2,7 @@ from typing import Tuple, Dict, List, Union
 import random
 
 class RSA:
-    def __init__(self, p: int, q: int) -> None:
+    def __init__(self, p: int, q: int, e: int = None) -> None:
         """Initialize RSA with two prime numbers, p and q."""
         if not (self.is_prime(p) and self.is_prime(q)):
             raise ValueError("p and q must be prime numbers.")
@@ -15,7 +15,10 @@ class RSA:
         self.phi_n = (p - 1) * (q - 1)
         
         # Generate public and private keys
-        self.public_key, self.private_key = self.generate_keys()
+        if e is not None:
+            self.public_key, self.private_key = self.generate_keys_with_e(e)
+        else:
+            self.public_key, self.private_key = self.generate_keys()
 
     def is_prime(self, num: int) -> bool:
         """Check if a number is prime."""
@@ -59,6 +62,12 @@ class RSA:
         d = self.modular_inverse(e, self.phi_n)
         
         # Public key: (n, e), Private key: (n, d)
+        return ((self.n, e), (self.n, d))
+
+    def generate_keys_with_e(self, e: int):
+        if self.gcd(e, self.phi_n) != 1:
+            raise ValueError("e must be coprime with phi_n")
+        d = self.modular_inverse(e, self.phi_n)
         return ((self.n, e), (self.n, d))
 
     def encrypt_text(self, text: str, public_key: Tuple[int, int]) -> List[int]:
@@ -106,3 +115,10 @@ def decrypt_data(encrypted_dict: Dict[str, Union[List[int], int, float]], rsa_in
             decrypted_dict[key] = value
             
     return decrypted_dict
+
+def get_rsa_instance():
+    """
+    Return an RSA instance with predefined p, q, and e values.
+    Will be called for encryption and decryption to ensure consistency.
+    """
+    return RSA(61, 53, e=899)
