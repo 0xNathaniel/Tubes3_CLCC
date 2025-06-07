@@ -4,9 +4,11 @@ from ui.home_page import HomePage
 def main(page: ft.Page):
     page.title = "CV ATS - Applicant Tracking System"
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.window_width = 1200
-    page.window_height = 900
-    page.padding = 20
+    page.window_width = 1600  
+    page.window_height = 1000 
+    page.window_maximized = True 
+    page.padding = 10 
+    page.scroll = ft.ScrollMode.AUTO 
     
     home_page = HomePage()
     
@@ -20,13 +22,14 @@ def main(page: ft.Page):
                 "/",
                 [],
                 appbar=ft.AppBar(
-                    title=ft.Text("CV ATS - Home"),
+                    title=ft.Text("CV ATS - Applicant Tracking System", size=20, weight="bold"),
                     bgcolor="#1976d2",
-                    color="white"
-                )
+                    color="white",
+                    toolbar_height=70 
+                ),
+                scroll=ft.ScrollMode.AUTO
             )
-            # Build home page content
-            home_page.build(view)
+            home_page.build(view, page)
             page.views.append(view)
         
         page.update()
