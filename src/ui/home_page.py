@@ -1,5 +1,6 @@
 import flet as ft
-from utils.find_top_n_cv import find_top_n_cv
+#from utils.find_top_n_cv import find_top_n_cv
+from utils.find_top_n_cv_encrypted import find_top_n_cv
 from utils.open_cv_details import open_cv_details
 import os
 
