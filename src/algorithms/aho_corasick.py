@@ -14,7 +14,7 @@ def aho_corasick(text: str, keywords: List[str]) -> List[int]:
     matches = search(text, root)
     
     # Count matches for each keyword
-    results = [0] * len(keywords)
+    results = [0 for _ in range(len(keywords))]
     for match_idx in matches:
         results[match_idx] += 1
     
@@ -24,9 +24,9 @@ def aho_corasick(text: str, keywords: List[str]) -> List[int]:
 
 class TrieNode:
     def __init__(self) -> None:
-        self.children: Dict[str, 'TrieNode'] = {}  # Child nodes
-        self.failure: Optional['TrieNode'] = None  # Failure link for mismatch
-        self.output: List[int] = []  # Pattern indices ending at this node
+        self.children: Dict[str, 'TrieNode'] = {}   # Child nodes
+        self.failure: Optional['TrieNode'] = None   # Failure link for mismatch
+        self.output: List[int] = []                 # Pattern indices ending at this node
 
 def build_trie(patterns: List[str]) -> TrieNode:
     """Build trie structure from all patterns"""

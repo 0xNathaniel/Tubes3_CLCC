@@ -34,8 +34,7 @@ def extract_keywords(keywords: str):
     if not keywords:
         return []
     keyword_list = [keyword.strip().lower() for keyword in keywords.split(',')]
-    unique_keywords = list(set(keyword_list))
-    return unique_keywords
+    return keyword_list
 
 def process_cv_exact(args):
     data_lamaran, keyword_list, algorithm = args
@@ -73,7 +72,7 @@ def process_cv_fuzzy(args):
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='0.tcp.ap.ngrok.io', user='remote_user', password='owen', database='stima_encrypted', port=16096
+            host='localhost', user='root', password='', database='stima3'
         )
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 
@@ -178,7 +177,7 @@ def find_top_n_cv(n : int, algorithm : str, keyword : str):
 if __name__ == "__main__":
     JUMLAH_CV_TAMPIL = 1
     ALGORITMA = "kmp"
-    KEYWORDS = "nursing"
+    KEYWORDS = "string stability"
 
     search_result = find_top_n_cv(JUMLAH_CV_TAMPIL, ALGORITMA, KEYWORDS)
 

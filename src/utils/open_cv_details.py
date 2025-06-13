@@ -3,7 +3,6 @@ import sys
 import subprocess
 
 def open_cv_details(path: str) -> bool:
-    # Validate if file exists before attempting to open it
     if not os.path.exists(path):
         print(f"Error: File not found at path '{path}'")
         return False
