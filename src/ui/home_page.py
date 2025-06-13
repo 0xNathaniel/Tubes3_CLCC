@@ -372,7 +372,6 @@ class HomePage:
     
     def show_candidate_summary_modal(self, result_data):
         try:
-            print("Creating summary modal...")
             first_name = result_data.get('first_name', 'N/A')
             last_name = result_data.get('last_name', 'N/A')
             application_role = result_data.get('application_role', 'N/A')
@@ -380,15 +379,6 @@ class HomePage:
             cv_summary = result_data.get('summary', 'Summary not available')
             keyword_results = result_data.get('result', [])
             
-            # Get candidate initials for avatar
-            initials = ""
-            if first_name != 'N/A' and len(first_name) > 0:
-                initials += first_name[0].upper()
-            if last_name != 'N/A' and len(last_name) > 0:
-                initials += last_name[0].upper()
-            if not initials:
-                initials = "CV"
-                
             keywords = [k.strip() for k in self.keyword_input.value.split(',')]
             keyword_matches = []
             for i, count in enumerate(keyword_results):
@@ -398,50 +388,25 @@ class HomePage:
             
             modal_content = self.modal_overlay.controls[1].content.content.content.controls[2].content
             
-            name_hash = sum(ord(c) for c in f"{first_name}{last_name}")
-            colors = ["#1976d2", "#2e7d32", "#c62828", "#7b1fa2", "#f57c00", "#0097a7"]
-            avatar_color = colors[name_hash % len(colors)]
-            
             match_percentage = 0
             if keywords and len(keyword_matches) > 0:
                 match_percentage = min(100, int((len(keyword_matches) / len(keywords)) * 100))
             
             modal_content.controls = [
                 ft.Container(
-                    content=ft.Row([
-                        ft.Container(
-                            content=ft.Text(
-                                initials,
-                                size=24,
-                                weight="bold",
-                                color="white"
-                            ),
-                            bgcolor=avatar_color,
-                            border_radius=30,
-                            width=60,
-                            height=60,
-                            alignment=ft.alignment.center,
-                            shadow=ft.BoxShadow(
-                                spread_radius=1,
-                                blur_radius=8,
-                                color="rgba(0,0,0,0.3)",
-                                offset=ft.Offset(0, 2)
-                            )
+                    content=ft.Column([
+                        ft.Text(
+                            f"{first_name} {last_name}", 
+                            size=24, 
+                            weight="bold", 
+                            color="#212121"
                         ),
-                        ft.Column([
-                            ft.Text(
-                                f"{first_name} {last_name}", 
-                                size=20, 
-                                weight="bold", 
-                                color="#212121"
-                            ),
-                            ft.Text(
-                                f"{application_role}", 
-                                size=14, 
-                                color="#757575"
-                            ),
-                        ], spacing=2, expand=True)
-                    ], spacing=15),
+                        ft.Text(
+                            f"{application_role}", 
+                            size=16, 
+                            color="#757575"
+                        ),
+                    ], spacing=4, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                     padding=ft.padding.all(15),
                     bgcolor="#f5f5f5",
                     border_radius=12,
@@ -583,7 +548,7 @@ class HomePage:
                                     color="#424242"
                                 )
                             ], scroll=ft.ScrollMode.AUTO),
-                            height=150,
+                            height=500,
                             padding=10,
                             bgcolor="#ffffff",
                             border_radius=8,

@@ -25,12 +25,26 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         return ""
 
 
-def extract_words_from_text(text: str, keep_spaces: bool = False) -> str:
-    text = re.sub(r'[^\w\s]', ' ', text)
-    text = re.sub(r'\s+', ' ', text).strip().lower()
+def extract_words_from_text(text: str, keep_spaces: bool = False, preserve_all: bool = False) -> str:
+    """
+    Extract words from text with minimal processing.
     
-    words = [word for word in text.split() if word]
+    Args:
+        text: The input text to process
+        keep_spaces: Whether to keep spaces between words
+        preserve_all: Whether to preserve all characters (ignored in this implementation)
     
+    Returns:
+        Processed text as a string
+    """
+    # Simple split by whitespace
+    words = []
+    for line in text.splitlines():
+        line = line.strip().lower()
+        if line:
+            words.extend([word for word in line.split() if word])
+    
+    # Join with or without spaces
     if keep_spaces:
         return " ".join(words)
     else:
@@ -75,7 +89,7 @@ def extract_cv_information(text: str) -> str:
     if job_title_match:
         extracted_info['Job_Title'] = job_title_match.group(1).strip()
     
-    skills_pattern = r'Skills\s*\n+(.*?)(?=\n\s*[A-Z][a-z]*\s*\n|$)'
+    skills_pattern = r'Skills\s*\n+(.*?)(?=\n\s*[A-Z][a-z]+\s*\n|$)'
     skills_match = re.search(skills_pattern, text, re.DOTALL | re.IGNORECASE)
     if skills_match:
         skills_text = skills_match.group(1).strip()
@@ -83,7 +97,7 @@ def extract_cv_information(text: str) -> str:
         skills_text = re.sub(r'\s+', ' ', skills_text)
         extracted_info['Skills'] = skills_text
     
-    summary_pattern = r'Summary\s*\n+(.*?)(?=\n\s*[A-Z][a-z]*\s*\n|$)'
+    summary_pattern = r'Summary\s*\n+(.*?)(?=\n\s*[A-Z][a-z]+\s*\n|$)'
     summary_match = re.search(summary_pattern, text, re.DOTALL | re.IGNORECASE)
     if summary_match:
         summary_text = summary_match.group(1).strip()
@@ -91,7 +105,7 @@ def extract_cv_information(text: str) -> str:
         summary_text = re.sub(r'\s+', ' ', summary_text)
         extracted_info['Summary'] = summary_text
     
-    highlights_pattern = r'Highlights\s*\n+(.*?)(?=\n\s*[A-Z][a-z]*\s*\n|$)'
+    highlights_pattern = r'Highlights\s*\n+(.*?)(?=\n\s*[A-Z][a-z]+\s*\n|$)'
     highlights_match = re.search(highlights_pattern, text, re.DOTALL | re.IGNORECASE)
     if highlights_match:
         highlights_text = highlights_match.group(1).strip()
@@ -99,7 +113,7 @@ def extract_cv_information(text: str) -> str:
         highlights_text = re.sub(r'\s+', ' ', highlights_text)
         extracted_info['Highlights'] = highlights_text
     
-    accomplishments_pattern = r'Accomplishments\s*\n+(.*?)(?=\n\s*[A-Z][a-z]*\s*\n|$)'
+    accomplishments_pattern = r'Accomplishments\s*\n+(.*?)(?=\n\s*[A-Z][a-z]+\s*\n|$)'
     accomplishments_match = re.search(accomplishments_pattern, text, re.DOTALL | re.IGNORECASE)
     if accomplishments_match:
         accomplishments_text = accomplishments_match.group(1).strip()
@@ -124,7 +138,7 @@ def extract_cv_information(text: str) -> str:
             companies.append(entry[1].strip())
             positions.append(entry[2].strip())
     
-    education_pattern = r'Education\s*\n+(.*?)(?=\nCertifications|\nInterests|\nAdditional Information|$)'
+    education_pattern = r'Education\s*\n+(.*?)(?=\n\s*Certifications|\n\s*Interests|\n\s*Additional Information|$)'
     education_match = re.search(education_pattern, text, re.DOTALL | re.IGNORECASE)
     if education_match:
         education_text = education_match.group(1).strip()
@@ -150,7 +164,7 @@ def extract_cv_information(text: str) -> str:
         }
     
     result = "=" * 52 + "\n"
-    result += "                        EXTRACTED CV INFORMATION\n"
+    result += "                        CV Summary (REGEX) \n"
     result += "=" * 52 + "\n\n"
     
     if 'Job_Title' in extracted_info:
