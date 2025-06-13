@@ -41,7 +41,7 @@ def bm_match_single(text: str, pattern: str) -> int:
     if m > n:
         return -1 
     
-    # Start from the end of pattern (Boyer-Moore's key optimization)
+    # Start from the end of pattern
     i = m - 1  # Text index
     j = m - 1  # Pattern index
     
@@ -67,7 +67,7 @@ def bm_match_single(text: str, pattern: str) -> int:
 
 def build_last_occurrence_table(pattern: str) -> List[int]:
     """Build table storing last occurrence of each character in pattern"""
-    last = [-1] * 128  # ASCII table size
+    last = [-1 for _ in range(128)] # ASCII table size
     
     # Record the rightmost position of each character
     for i in range(len(pattern)):

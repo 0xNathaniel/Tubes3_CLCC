@@ -107,7 +107,7 @@ def calculate_similarity_score(s1: str, s2: str) -> float:
     return 1.0 - (distance / max_len)
 
 
-def levenshtein_fuzzy_match(text: str, keywords: List[str], max_distance: int = 1) -> List[int]:
+def levenshtein_fuzzy_match(text: str, keywords: List[str], max_distance: int = 2) -> List[int]:
     """Main fuzzy matching function using Levenshtein distance"""
     results = []
     
@@ -126,7 +126,7 @@ def levenshtein_fuzzy_match(text: str, keywords: List[str], max_distance: int = 
     return results
 
 
-def levenshtein_similarity_score(text: str, keywords: List[str], similarity_threshold: float = 0.8) -> List[int]:
+def levenshtein_similarity_score(text: str, keywords: List[str], similarity_threshold: float = 0.7) -> List[int]:
     """Find matches using similarity score threshold"""
     results = []
     words_in_text = extract_words_simple(text)
