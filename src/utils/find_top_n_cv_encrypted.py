@@ -72,7 +72,7 @@ def process_cv_fuzzy(args):
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='localhost', user='root', password='NathanielJR031204', database='stima_encrypted', port=3316
+            host='localhost', user='root', password='', database='stima3'
         )
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 
