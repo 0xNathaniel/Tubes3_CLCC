@@ -2,7 +2,7 @@ import flet as ft
 from ui.home_page import HomePage
 
 def main(page: ft.Page):
-    page.title = "CV ATS - Applicant Tracking System"
+    page.title = "CLCC - ATS Friendly CV Scanner"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.window_width = 1600  
     page.window_height = 1000 
@@ -22,7 +22,7 @@ def main(page: ft.Page):
                 "/",
                 [],
                 appbar=ft.AppBar(
-                    title=ft.Text("CV ATS - Applicant Tracking System", size=20, weight="bold"),
+                    title=ft.Text("CLCC - ATS Friendly CV Scanner", size=20, weight="bold"),
                     bgcolor="#1976d2",
                     color="white",
                     toolbar_height=70 

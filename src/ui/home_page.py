@@ -16,7 +16,7 @@ class HomePage:
         self.view = view
         
         # Title
-        title = ft.Text("CV ATS - Applicant Tracking System", 
+        title = ft.Text("CLcc ATS Friendly CV Scanner", 
                     size=32, weight="bold", color="#0d47a1")
         subtitle = ft.Text("Find the best candidates using advanced string matching algorithms", 
                         size=18, italic=True, color="#424242")
@@ -185,11 +185,9 @@ class HomePage:
     
     def algorithm_changed(self, _):
         self.search_algorithm = list(self.algorithm_toggle.selected)[0]
-        print(f"Algorithm changed to: {self.search_algorithm}")
     
     def top_matches_changed(self, e):
         self.top_matches = int(self.top_matches_dropdown.value)
-        print(f"Top matches changed to: {self.top_matches}")
     
     def search_cvs(self, _):
         if not self.keyword_input.value or not self.keyword_input.value.strip():
@@ -198,7 +196,7 @@ class HomePage:
         
         self.search_button.text = "Searching..."
         self.search_button.disabled = True
-        self.summary_section.value = "🔍 Searching CVs... Please wait."
+        self.summary_section.value = "Searching CVs... Please wait."
         self.summary_section.update()
         self.search_button.update()
         
@@ -222,8 +220,8 @@ class HomePage:
             top_n_results = search_results.get('top_n', [])
             
             self.summary_section.value = (
-                f"✅ Search completed! Found {len(top_n_results)} matching CVs from {total_cv} total CVs. "
-                f"⚡ Exact match: {exact_time:.3f}s, Fuzzy match: {fuzzy_time:.3f}s"
+                f"Search completed! Found {len(top_n_results)} matching CVs from {total_cv} total CVs. "
+                f"Exact match: {exact_time:.3f}s, Fuzzy match: {fuzzy_time:.3f}s"
             )
             
             if top_n_results:
@@ -237,7 +235,7 @@ class HomePage:
                 
         except Exception as ex:
             print(f"Search error: {str(ex)}")
-            self.summary_section.value = f"❌ Error occurred during search: {str(ex)}"
+            self.summary_section.value = f"Error occurred during search: {str(ex)}"
             self.create_error_card(str(ex))
             self.show_error_snackbar("Search failed. Please try again.")
         
@@ -263,7 +261,7 @@ class HomePage:
                 keyword_name = keywords[i]
                 keyword_matches.append(f"• {keyword_name}: {count} matches")
         
-        keyword_controls = [ft.Text("🔍 Keywords:", weight="bold", size=14, color="#1976d2")]
+        keyword_controls = [ft.Text("Keywords:", weight="bold", size=14, color="#1976d2")]
         
         if keyword_matches:
             for match in keyword_matches[:4]:
@@ -382,118 +380,239 @@ class HomePage:
             cv_summary = result_data.get('summary', 'Summary not available')
             keyword_results = result_data.get('result', [])
             
+            # Get candidate initials for avatar
+            initials = ""
+            if first_name != 'N/A' and len(first_name) > 0:
+                initials += first_name[0].upper()
+            if last_name != 'N/A' and len(last_name) > 0:
+                initials += last_name[0].upper()
+            if not initials:
+                initials = "CV"
+                
             keywords = [k.strip() for k in self.keyword_input.value.split(',')]
             keyword_matches = []
             for i, count in enumerate(keyword_results):
                 if i < len(keywords) and count > 0:
                     keyword_name = keywords[i]
-                    keyword_matches.append(f"• {keyword_name}: {count} matches")
+                    keyword_matches.append((keyword_name, count))
             
             modal_content = self.modal_overlay.controls[1].content.content.content.controls[2].content
+            
+            name_hash = sum(ord(c) for c in f"{first_name}{last_name}")
+            colors = ["#1976d2", "#2e7d32", "#c62828", "#7b1fa2", "#f57c00", "#0097a7"]
+            avatar_color = colors[name_hash % len(colors)]
+            
+            match_percentage = 0
+            if keywords and len(keyword_matches) > 0:
+                match_percentage = min(100, int((len(keyword_matches) / len(keywords)) * 100))
             
             modal_content.controls = [
                 ft.Container(
                     content=ft.Row([
                         ft.Container(
                             content=ft.Text(
-                                f"{first_name[0]}{last_name[0]}" if first_name != 'N/A' and last_name != 'N/A' else "CV",
-                                size=20,
+                                initials,
+                                size=24,
                                 weight="bold",
                                 color="white"
                             ),
-                            bgcolor="#1976d2",
-                            border_radius=25,
-                            width=50,
-                            height=50,
-                            alignment=ft.alignment.center
+                            bgcolor=avatar_color,
+                            border_radius=30,
+                            width=60,
+                            height=60,
+                            alignment=ft.alignment.center,
+                            shadow=ft.BoxShadow(
+                                spread_radius=1,
+                                blur_radius=8,
+                                color="rgba(0,0,0,0.3)",
+                                offset=ft.Offset(0, 2)
+                            )
                         ),
                         ft.Column([
-                            ft.Text(f"{first_name} {last_name}", size=16, weight="bold", color="#1976d2"),
-                            ft.Text(f"{application_role}", size=12, color="#757575"),
-                        ], spacing=5, expand=True)
+                            ft.Text(
+                                f"{first_name} {last_name}", 
+                                size=20, 
+                                weight="bold", 
+                                color="#212121"
+                            ),
+                            ft.Text(
+                                f"{application_role}", 
+                                size=14, 
+                                color="#757575"
+                            ),
+                        ], spacing=2, expand=True)
                     ], spacing=15),
-                    padding=15,
-                    bgcolor="#f8f9fa",
-                    border_radius=8,
-                    margin=ft.margin.only(bottom=15)
+                    padding=ft.padding.all(15),
+                    bgcolor="#f5f5f5",
+                    border_radius=12,
+                    margin=ft.margin.only(bottom=20)
                 ),
                 
                 ft.Container(
                     content=ft.Row([
-                        ft.Text("🎯", size=20),
-                        ft.Column([
-                            ft.Text("Total Matches", size=12, color="#757575"),
-                            ft.Text(f"{total_matches}", size=18, weight="bold", color="#4caf50")
-                        ], spacing=2)
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Text("Total Matches", size=12, color="#757575"),
+                                ft.Row([
+                                    ft.Icon(name="star", color="#f57c00", size=18),
+                                    ft.Text(
+                                        f"{total_matches}", 
+                                        size=20, 
+                                        weight="bold", 
+                                        color="#f57c00"
+                                    )
+                                ], spacing=5)
+                            ], spacing=4, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                            padding=10,
+                            border_radius=8,
+                            bgcolor="#fff3e0",
+                            expand=1,
+                            height=70,
+                            alignment=ft.alignment.center
+                        ),
+                        
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Text("Match Rate", size=12, color="#757575"),
+                                ft.Row([
+                                    ft.Icon(name="percent", color="#388e3c", size=18),
+                                    ft.Text(
+                                        f"{match_percentage}%", 
+                                        size=20, 
+                                        weight="bold", 
+                                        color="#388e3c"
+                                    )
+                                ], spacing=5)
+                            ], spacing=4, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                            padding=10,
+                            border_radius=8,
+                            bgcolor="#e8f5e9",
+                            expand=1,
+                            height=70,
+                            alignment=ft.alignment.center
+                        ),
+                        
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Text("Keywords", size=12, color="#757575"),
+                                ft.Row([
+                                    ft.Icon(name="tag", color="#1565c0", size=18),
+                                    ft.Text(
+                                        f"{len(keyword_matches)}/{len(keywords)}", 
+                                        size=20, 
+                                        weight="bold", 
+                                        color="#1565c0"
+                                    )
+                                ], spacing=5)
+                            ], spacing=4, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                            padding=10,
+                            border_radius=8,
+                            bgcolor="#e3f2fd",
+                            expand=1,
+                            height=70,
+                            alignment=ft.alignment.center
+                        ),
                     ], spacing=10),
-                    padding=15,
-                    bgcolor="#e8f5e8",
-                    border_radius=8,
-                    margin=ft.margin.only(bottom=15)
+                    margin=ft.margin.only(bottom=20)
                 ),
                 
                 ft.Container(
                     content=ft.Column([
-                        ft.Text("🔍 Keyword Matches", size=14, weight="bold", color="#1976d2"),
-                        ft.Divider(height=5, color="transparent"),
-                        ft.Column([
-                            ft.Text(match, size=12, color="#1565c0") for match in keyword_matches
-                        ] if keyword_matches else [
-                            ft.Text("No specific keyword matches found", size=12, italic=True, color="#757575")
-                        ], spacing=3)
-                    ], spacing=5),
+                        ft.Row([
+                            ft.Icon(name="search", color="#1976d2", size=18),
+                            ft.Text(
+                                "Keyword Matches", 
+                                size=16, 
+                                weight="bold", 
+                                color="#1976d2"
+                            )
+                        ], spacing=8),
+                        
+                        ft.Divider(height=1, color="#e0e0e0"),
+                        
+                        ft.GridView(
+                            runs_count=2,
+                            max_extent=200,
+                            child_aspect_ratio=3.0,
+                            spacing=5,
+                            run_spacing=5,
+                            padding=5,
+                            controls=[
+                                self._create_keyword_chip(keyword, count, total_matches)
+                                for keyword, count in keyword_matches
+                            ] if keyword_matches else [
+                                ft.Container(
+                                    content=ft.Text(
+                                        "No specific keyword matches found", 
+                                        size=14, 
+                                        italic=True, 
+                                        color="#757575"
+                                    ),
+                                    padding=10
+                                )
+                            ]
+                        )
+                    ], spacing=10),
                     padding=15,
-                    bgcolor="#e3f2fd",
-                    border_radius=8,
-                    margin=ft.margin.only(bottom=15)
+                    bgcolor="#f5f5f5",
+                    border_radius=12,
+                    margin=ft.margin.only(bottom=20)
                 ),
+                
                 ft.Container(
                     content=ft.Column([
-                        ft.Text("📄 CV Summary", size=14, weight="bold", color="#f57c00"),
-                        ft.Divider(height=5, color="transparent"),
+                        ft.Row([
+                            ft.Icon(name="description", color="#5d4037", size=18),
+                            ft.Text(
+                                "CV Summary", 
+                                size=16, 
+                                weight="bold", 
+                                color="#5d4037"
+                            )
+                        ], spacing=8),
+                        
+                        ft.Divider(height=1, color="#e0e0e0"),
+                        
                         ft.Container(
                             content=ft.Column([
                                 ft.Text(
                                     cv_summary if cv_summary and cv_summary.strip() and cv_summary != 'Summary not available' 
                                     else "No detailed summary available for this CV.",
-                                    size=12,
+                                    size=14,
                                     selectable=True,
                                     color="#424242"
                                 )
                             ], scroll=ft.ScrollMode.AUTO),
-                            height=250,
+                            height=150,
                             padding=10,
                             bgcolor="#ffffff",
                             border_radius=8,
                             border=ft.border.all(1, "#e0e0e0"),
                         )
-                    ], spacing=5),
+                    ], spacing=10),
                     padding=15,
-                    bgcolor="#fff8e1",
-                    border_radius=8
+                    bgcolor="#efebe9",
+                    border_radius=12,
+                    margin=ft.margin.only(bottom=20)
                 ),
                 
                 ft.Container(
-                    content=ft.ElevatedButton(
-                        text="Close",
-                        on_click=lambda _: self.hide_modal(),
-                        style=ft.ButtonStyle(
-                            bgcolor="#ECEFF1", 
-                            color="#000000"  
+                    content=ft.Row([
+                        ft.OutlinedButton(
+                            "Close",
+                            icon="close",
+                            on_click=lambda _: self.hide_modal(),
+                            style=ft.ButtonStyle(
+                                color="#616161",
+                                shape=ft.RoundedRectangleBorder(radius=8)
+                            ),
                         ),
-                        width=100
-                    ),
-                    alignment=ft.alignment.center_right,
+                    ], spacing=10, alignment=ft.MainAxisAlignment.END),
                     margin=ft.margin.only(top=15)
                 )
             ]
-            
-            # Make the modal visible
-            print("Showing modal...")
             self.modal_overlay.visible = True
             self.page.update()
-            
-            print("Modal displayed successfully")
             
         except Exception as e:
             print(f"Error showing candidate summary modal: {e}")
@@ -501,9 +620,52 @@ class HomePage:
             traceback.print_exc()
             self.show_error_snackbar("Failed to load candidate summary.")
     
+    def _create_keyword_chip(self, keyword, count, total_matches):
+        """Helper method to create a keyword chip with visual strength indicator"""
+        strength = min(5, max(1, int((count / max(1, total_matches)) * 5)))
+        
+        colors = {
+            1: "#bbdefb",
+            2: "#90caf9",
+            3: "#64b5f6",
+            4: "#42a5f5",
+            5: "#1e88e5"
+        }
+        text_colors = {
+            1: "#1565c0",
+            2: "#0d47a1",
+            3: "#ffffff",
+            4: "#ffffff",
+            5: "#ffffff"
+        }
+        
+        return ft.Container(
+            content=ft.Row([
+                ft.Text(
+                    keyword,
+                    size=13,
+                    weight="w500",
+                    color=text_colors[strength]
+                ),
+                ft.Container(
+                    content=ft.Text(
+                        str(count),
+                        size=12,
+                        weight="bold",
+                        color=text_colors[strength]
+                    ),
+                    border_radius=10,
+                    padding=ft.padding.symmetric(horizontal=6, vertical=2)
+                )
+            ], spacing=5, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            bgcolor=colors[strength],
+            border_radius=15,
+            padding=ft.padding.symmetric(horizontal=12, vertical=6),
+            height=32
+        )
+    
     def hide_modal(self):
         """Hide the custom modal"""
-        print("Hiding modal...")
         self.modal_overlay.visible = False
         self.page.update()
     
@@ -537,9 +699,10 @@ class HomePage:
         
         modal_content.controls = [
             ft.Text(f"CV Details - {first_name} {last_name}", size=16, weight="bold"),
-            ft.Text(f"📁 CV Path: {cv_path}", size=12, color="#757575"),
+            ft.Text(f"CV Path: {cv_path}", size=12, color="#757575"),
             ft.Divider(),
-            ft.Text("📄 Complete CV Information:", weight="bold", size=14),            ft.Container(
+            ft.Text("Complete CV Information:", weight="bold", size=14),            
+            ft.Container(
                 content=ft.Column([
                     ft.Text(
                         formatted_cv if formatted_cv else "No CV details available for this applicant.",
@@ -575,7 +738,7 @@ class HomePage:
         no_results_card = ft.Card(
             content=ft.Container(
                 content=ft.Column([
-                    ft.Text("🔍", size=50),
+                    ft.Text("", size=50),
                     ft.Text("No matching CVs found", weight="bold", size=20),
                     ft.Text("Try different keywords or adjust your search criteria", size=14, color="#757575"),
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),

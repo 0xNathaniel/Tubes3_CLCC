@@ -73,7 +73,7 @@ def process_cv_fuzzy(args):
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='0.tcp.ap.ngrok.io', user='remote_user', password='owen', database='stima_encrypted', port=16096
+            host='localhost', user='root', password='', database='stima3'
         )
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 
