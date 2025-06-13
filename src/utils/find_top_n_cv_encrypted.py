@@ -34,8 +34,7 @@ def extract_keywords(keywords: str):
     if not keywords:
         return []
     keyword_list = [keyword.strip().lower() for keyword in keywords.split(',')]
-    unique_keywords = list(set(keyword_list))
-    return unique_keywords
+    return keyword_list
 
 def process_cv_exact(args):
     data_lamaran, keyword_list, algorithm = args
@@ -43,8 +42,7 @@ def process_cv_exact(args):
     if data_lamaran['cv_path'] is None:
         return detail_id, []
 
-    cv_words = extract_words_from_pdf(data_lamaran['cv_path'], keep_spaces=True)
-    print(cv_words)
+    cv_words = extract_words_from_pdf(data_lamaran['cv_path'])
     if not cv_words:
         return detail_id, []
 
@@ -64,7 +62,7 @@ def process_cv_fuzzy(args):
     if data_lamaran['cv_path'] is None:
         return detail_id, []
         
-    cv_words = extract_words_from_pdf(data_lamaran['cv_path'], keep_spaces=True)
+    cv_words = extract_words_from_pdf(data_lamaran['cv_path'])
     if not cv_words:
         return detail_id, []
 
@@ -74,7 +72,7 @@ def process_cv_fuzzy(args):
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='localhost', user='root', password='', database='stima3'
+            host='localhost', user='root', password='NathanielJR031204', database='stima_encrypted', port=3316
         )
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 

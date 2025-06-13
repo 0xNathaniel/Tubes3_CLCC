@@ -50,7 +50,7 @@ def extract_words_from_text(text: str, keep_spaces: bool = False, preserve_all: 
     else:
         return "".join(words)
 
-def extract_words_from_pdf(pdf_path: str, keep_spaces: bool = False) -> str:
+def extract_words_from_pdf(pdf_path: str, keep_spaces: bool = True) -> str:
     raw_text = extract_text_from_pdf(pdf_path)
     return extract_words_from_text(raw_text, keep_spaces)
 

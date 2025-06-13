@@ -13,8 +13,7 @@ def extract_keywords(keywords: str):
     if not keywords:
         return []
     keyword_list = [keyword.strip().lower() for keyword in keywords.split(',')]
-    unique_keywords = list(set(keyword_list))
-    return unique_keywords
+    return keyword_list
 
 def process_cv_exact(args):
     data_lamaran, keyword_list, algorithm = args

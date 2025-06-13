@@ -16,7 +16,7 @@ class HomePage:
         self.view = view
         
         # Title
-        title = ft.Text("CLcc ATS Friendly CV Scanner", 
+        title = ft.Text("CLCC ATS Friendly CV Scanner", 
                     size=32, weight="bold", color="#0d47a1")
         subtitle = ft.Text("Find the best candidates using advanced string matching algorithms", 
                         size=18, italic=True, color="#424242")
@@ -212,7 +212,7 @@ class HomePage:
                 keyword=self.keyword_input.value
             )
             
-            print(f"Search results: {search_results}")
+            #print(f"Search results: {search_results}")
             
             total_cv = search_results.get('total_cv', 0)
             exact_time = search_results.get('exact_execution_time', 0)
@@ -260,6 +260,7 @@ class HomePage:
             if i < len(keywords) and count > 0:
                 keyword_name = keywords[i]
                 keyword_matches.append(f"• {keyword_name}: {count} matches")
+                #print(f"Keyword match: {keyword_name} - {count} matches")
         
         keyword_controls = [ft.Text("Keywords:", weight="bold", size=14, color="#1976d2")]
         
