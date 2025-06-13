@@ -152,6 +152,10 @@ Pastikan sistem Anda telah ter-install:
 
    ```bash
    flet main.py
+
+   atau
+
+   flet run --web main.py
    ```
 
 3. **Akses aplikasi melalui window Flet yang terbuka atau browser sesuai instruksi Flet.**
