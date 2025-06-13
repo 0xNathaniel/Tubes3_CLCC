@@ -43,7 +43,7 @@ def process_cv_exact(args):
     if data_lamaran['cv_path'] is None:
         return detail_id, []
 
-    cv_words = extract_words_from_pdf(data_lamaran['cv_path'])
+    cv_words = extract_words_from_pdf(data_lamaran['cv_path'], keep_spaces=True)
     if not cv_words:
         return detail_id, []
 
@@ -63,7 +63,7 @@ def process_cv_fuzzy(args):
     if data_lamaran['cv_path'] is None:
         return detail_id, []
         
-    cv_words = extract_words_from_pdf(data_lamaran['cv_path'])
+    cv_words = extract_words_from_pdf(data_lamaran['cv_path'], keep_spaces=True)
     if not cv_words:
         return detail_id, []
 
@@ -73,7 +73,7 @@ def process_cv_fuzzy(args):
 def find_top_n_cv(n : int, algorithm : str, keyword : str):
     try:
         koneksi = mysql.connector.connect(
-            host='0.tcp.ap.ngrok.io', user='remote_user', password='owen', database='stima_encrypted', port=16096
+            host='localhost', user='root', password='NathanielJR031204', database='stima_encrypted', port = 3316
         )
         if koneksi.is_connected():
             cursor = koneksi.cursor(dictionary=True) 
@@ -178,7 +178,7 @@ def find_top_n_cv(n : int, algorithm : str, keyword : str):
 if __name__ == "__main__":
     JUMLAH_CV_TAMPIL = 1
     ALGORITMA = "kmp"
-    KEYWORDS = "nursing"
+    KEYWORDS = "string stability"
 
     search_result = find_top_n_cv(JUMLAH_CV_TAMPIL, ALGORITMA, KEYWORDS)
 
