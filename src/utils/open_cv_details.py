@@ -8,7 +8,6 @@ def open_cv_details(path: str) -> bool:
         return False
 
     try:
-        # Platform-specific commands to open files
         if sys.platform == "win32":
             # Windows
             os.startfile(path)
